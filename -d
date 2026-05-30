@@ -1,0 +1,4 @@
+{"timestamp":"2026-05-17T19:23:54.984+00:00","status":400,"error":"Bad Request","path":"/api/surcharge/calculate"}--_curl_--"origin":"CA"
+--_curl_--"destination":"TX"
+--_curl_--"weight":18
+--_curl_--"serviceType":"EXPRESS"
