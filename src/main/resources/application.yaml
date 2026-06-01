@@ -1,20 +1,49 @@
 spring:
   application:
+    # Name used in logs, actuator info, and distributed tracing
     name: shiprate-api
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-      - org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
+
   datasource:
+    # JDBC connection string — host:port/database_name
     url: jdbc:postgresql://localhost:5432/shiprate
     username: postgres
     password: postgres
+    # Explicit driver class — Spring can auto-detect this but being explicit is clearer
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
+      # update = Hibernate modifies the schema to match your entities on startup
+      # Never use update in production — use a migration tool like Flyway instead
       ddl-auto: update
+    # Prints every SQL query Hibernate generates — useful for debugging, remove in production
     show-sql: true
+    # Keeps JPA session open only for the duration of the service call, not the entire HTTP request
+    # Prevents accidental lazy-loading queries during response serialization
+    open-in-view: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        # Pretty-prints SQL in logs — easier to read multi-line queries
         format_sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  # Base64-encoded secret key used to sign and verify JWT tokens
+  # In production this must come from a secrets manager (AWS Secrets Manager, Vault etc.)
+  # Never commit a real production secret to version control
+  secret: c2hpcHJhdGUtYXBpLXNlY3JldC1rZXktZm9yLWRldi10ZXN0aW5nLW9ubHktMjAyNg==
+  # Token validity in milliseconds — 86400000ms = 24 hours
+  expiration: 86400000
+
+management:
+  endpoints:
+    web:
+      # Explicitly opt in to endpoints — Spring Boot hides everything except /health by default
+      # Never expose env or heapdump in production — they leak secrets and heap contents
+      exposure:
+        include: health, metrics, info

@@ -42,4 +42,10 @@ public class SurchargeController {
     public List<Shipment> shipments() {
         return shipmentRepository.findAll();
     }
+
+    // Read-only rate lookup — result served from Redis cache after first call
+    @GetMapping("/surcharge/lookup")
+    public SurchargeResponse lookup(@Valid @ModelAttribute SurchargeRequest request) {
+        return surchargeService.lookupRate(request);
+    }
 }

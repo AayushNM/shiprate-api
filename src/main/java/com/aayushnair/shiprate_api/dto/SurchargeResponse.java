@@ -7,6 +7,9 @@ public class SurchargeResponse {
     public double remoteAreaFee;
     public double finalCharge;
 
+    // Required by Redis JSON deserializer — cannot instantiate object without this
+    public SurchargeResponse() {}
+
     public SurchargeResponse(String shipmentId, double baseRate,
                              double fuelSurcharge, double remoteAreaFee,
                              double finalCharge) {

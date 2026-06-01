@@ -1,0 +1,31 @@
+name: CI
+
+# Trigger on every push and pull request to main
+# Catches regressions before they land in the main branch
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          # Cache Maven dependencies between runs — avoids re-downloading
+          # the entire dependency tree on every CI run
+          cache: maven
+
+      - name: Build and test
+        # -B = batch mode, suppresses Maven download progress bars in CI logs
+        # -Dspring.profiles.active=test activates application-test.yaml
+        # which uses H2 in-memory DB and disables Redis
+        # The CI runner has no PostgreSQL or Redis — test profile handles this
+        run: mvn -B verify --file pom.xml -Dspring.profiles.active=test
